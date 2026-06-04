@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart' show Timestamp;
 import 'package:equatable/equatable.dart';
 
 class Product extends Equatable {
@@ -47,7 +48,7 @@ class Product extends Equatable {
         'quantity': quantity,
         'reorderThreshold': reorderThreshold,
         'unitPrice': unitPrice,
-        if (createdAt != null) 'createdAt': createdAt,
+        if (createdAt != null) 'createdAt': Timestamp.fromDate(createdAt!),
       };
 
   factory Product.fromMap(String id, Map<String, dynamic> map) {
@@ -65,6 +66,7 @@ class Product extends Equatable {
   static DateTime? _parseDate(dynamic value) {
     if (value == null) return null;
     if (value is DateTime) return value;
+    if (value is Timestamp) return value.toDate();
     return DateTime.tryParse(value.toString());
   }
 

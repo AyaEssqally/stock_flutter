@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/foundation.dart'
+    show debugPrint, defaultTargetPlatform, kIsWeb, TargetPlatform;
 
 import '../../firebase_options.dart';
 
@@ -9,14 +10,20 @@ class FirebaseBootstrap {
 
   static Future<bool> tryInitialize() async {
     if (initialized) return true;
-    if (!DefaultFirebaseOptions.isConfigured) {
-      initError = 'Firebase options placeholder — exécutez flutterfire configure.';
-      return false;
-    }
     try {
-      await Firebase.initializeApp(
-        options: DefaultFirebaseOptions.currentPlatform,
-      );
+      if (DefaultFirebaseOptions.isConfigured) {
+        await Firebase.initializeApp(
+          options: DefaultFirebaseOptions.currentPlatform,
+        );
+      } else if (!kIsWeb &&
+          defaultTargetPlatform == TargetPlatform.android) {
+        // Android : google-services.json peut suffire sans firebase_options.dart
+        await Firebase.initializeApp();
+      } else {
+        initError =
+            'Firebase options placeholder — exécutez flutterfire configure.';
+        return false;
+      }
       initialized = true;
       initError = null;
       return true;

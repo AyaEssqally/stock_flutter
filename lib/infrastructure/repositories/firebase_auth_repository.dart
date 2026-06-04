@@ -32,7 +32,7 @@ class FirebaseAuthRepository implements AuthRepository {
     try {
       await _auth!.signInWithEmailAndPassword(email: email, password: password);
     } on FirebaseAuthException catch (e) {
-      throw AuthFailure(e.message ?? 'Échec connexion');
+      throw AuthFailure(_authErrorMessage(e));
     }
   }
 
@@ -48,7 +48,30 @@ class FirebaseAuthRepository implements AuthRepository {
         password: password,
       );
     } on FirebaseAuthException catch (e) {
-      throw AuthFailure(e.message ?? 'Échec inscription');
+      throw AuthFailure(_authErrorMessage(e));
+    }
+  }
+
+  static String _authErrorMessage(FirebaseAuthException e) {
+    switch (e.code) {
+      case 'operation-not-allowed':
+        return 'Firebase : activez « Email/Mot de passe » dans Authentication → Sign-in method.';
+      case 'weak-password':
+        return 'Mot de passe trop faible (minimum 6 caractères).';
+      case 'email-already-in-use':
+        return 'Email déjà utilisé — allez sur Connexion.';
+      case 'invalid-email':
+        return 'Adresse email invalide.';
+      case 'network-request-failed':
+        return 'Pas de réseau sur l’émulateur / la machine.';
+      case 'configuration-not-found':
+        return 'Projet Firebase mal configuré — vérifiez google-services.json et la console.';
+      default:
+        final detail = e.message;
+        if (detail != null && detail.isNotEmpty && detail != 'Error') {
+          return detail;
+        }
+        return 'Auth (${e.code}) — voir Firebase Console → Authentication.';
     }
   }
 

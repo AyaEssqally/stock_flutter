@@ -1,0 +1,80 @@
+﻿# EXECUTION_LOG — stock_flutter (Android + Firebase)
+# Date: 2026-06-04
+# Agent: corrections examen ESISA
+
+## Workspace
+- Root: C:\Users\ayaes\Desktop\stock_flutter
+- Flutter: C:\src\flutter\bin\flutter.bat
+- Package Android: com.esisa.stock.stock_flutter
+
+## Modifications effectuées par l'agent
+
+### fix(firebase)
+- lib/firebase_options.dart — clés Android alignées sur android/app/google-services.json (projet stock-flutter-e1ae4)
+- lib/infrastructure/firebase/firebase_bootstrap.dart — init avec options OU fallback Android via google-services.json
+- android/app/google-services.json.example — template sans secrets
+- README.md — section Firebase Android (chemin Desktop)
+
+### fix(build)
+- lib/domain/entities/product.dart — Timestamp Firestore pour createdAt
+- lib/domain/entities/category.dart — idem
+- lib/domain/entities/mouvement.dart — idem pour date
+- lib/app.dart — import inutilisé retiré (analyze)
+
+### Déjà conforme (vérifié)
+- android/app/build.gradle.kts: applicationId, minSdk 23, plugin google-services
+- android/settings.gradle.kts: plugin google-services 4.4.2
+- MainActivity.kt: com.esisa.stock.stock_flutter
+- Firebase Auth email: lib/infrastructure/repositories/firebase_auth_repository.dart
+- Firestore multi-tenant: tenants/{uid}/products|categories|mouvements
+- firestore.rules: auth.uid == tenantId
+
+### android/app/google-services.json
+- Présent localement (gitignored). NE PAS committer.
+
+## Commandes à exécuter localement
+
+```powershell
+cd C:\Users\ayaes\Desktop\stock_flutter
+
+# Si gradlew.bat absent:
+C:\src\flutter\bin\flutter.bat create . --platforms=android
+
+C:\src\flutter\bin\flutter.bat pub get
+C:\src\flutter\bin\flutter.bat analyze
+C:\src\flutter\bin\flutter.bat build apk --debug
+```
+
+Ou script: .\scripts\verify_and_commit.ps1
+
+## Commits Git demandés (à créer si pas encore faits)
+
+```powershell
+cd C:\Users\ayaes\Desktop\stock_flutter
+
+# 1 — Android (sans google-services.json)
+git add android/app/build.gradle.kts android/settings.gradle.kts android/build.gradle.kts android/app/google-services.json.example
+git commit -m "fix(android): gradle et google-services"
+
+# 2 — Firebase
+git add lib/firebase_options.dart lib/infrastructure/firebase/firebase_bootstrap.dart README.md
+git commit -m "fix(firebase): options et bootstrap"
+
+# 3 — Build / analyze
+git add lib/domain/entities/product.dart lib/domain/entities/category.dart lib/domain/entities/mouvement.dart lib/app.dart
+git commit -m "fix(build): corrections compile et analyze"
+```
+
+## Résultat build (agent shell indisponible — sous-agent précédent)
+
+- flutter pub get: OK (exit 0) — rapport intermédiaire
+- flutter analyze: 1 warning unused import app.dart — CORRIGÉ dans cette session
+- flutter build apk --debug: OK — app-debug.apk (sous-agent, gradlew présent sur leur run)
+- Cet environnement: shell parent sans sortie fiable; relancer analyze/build localement.
+
+## Actions manuelles utilisateur
+
+1. Firebase Console: Auth email/password + Firestore + déployer firestore.rules
+2. Si pas de google-services.json: télécharger depuis Firebase → android/app/
+3. Optionnel iOS/Web/Windows: `flutterfire configure` (login Google)
+4. Ne pas committer google-services.json ni clés .env

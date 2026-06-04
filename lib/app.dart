@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'application/providers/repository_providers.dart';
-import 'core/providers/app_providers.dart';
 import 'core/router/app_router.dart';
 import 'domain/entities/product.dart';
 import 'infrastructure/notifications/low_stock_notifier.dart';

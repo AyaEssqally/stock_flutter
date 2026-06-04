@@ -43,11 +43,20 @@ Si Flutter est absent, voir **GUIDE_FR.md** section *Installation Flutter*.
 ## Démarrage rapide
 
 ```powershell
-cd C:\Users\ayaes\Projects\stock_flutter
-.\scripts\setup_projet.ps1
+cd C:\Users\ayaes\Desktop\stock_flutter
+flutter pub get
 ```
 
-Puis configurer Firebase (`flutterfire configure`) — détail dans **GUIDE_FR.md**.
+### Firebase (Android)
+
+1. Console Firebase : projet avec **Auth email/mot de passe** et **Firestore** activés.
+2. Télécharger `google-services.json` (package `com.esisa.stock.stock_flutter`) vers `android/app/google-services.json`  
+   — modèle : `android/app/google-services.json.example`.
+3. Options Dart : `dart pub global activate flutterfire_cli` puis `flutterfire configure`  
+   **ou** aligner `lib/firebase_options.dart` sur les clés du fichier JSON (Android déjà renseigné si le JSON local est présent).
+4. Déployer [`firestore.rules`](firestore.rules) dans la console Firebase.
+
+Sans `google-services.json` ni options valides, l'app affiche l'écran **Configuration Firebase** (pas de crash).
 
 ```powershell
 flutter pub get

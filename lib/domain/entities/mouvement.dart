@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 
 enum MouvementType { entree, sortie }
@@ -29,7 +30,7 @@ class Mouvement extends Equatable {
         'productId': productId,
         'type': type.name,
         'quantity': quantity,
-        'date': date,
+        'date': Timestamp.fromDate(date),
         if (note != null) 'note': note,
         if (categoryId != null) 'categoryId': categoryId,
         if (unitPrice != null) 'unitPrice': unitPrice,
@@ -52,6 +53,7 @@ class Mouvement extends Equatable {
   static DateTime? _parseDate(dynamic value) {
     if (value == null) return null;
     if (value is DateTime) return value;
+    if (value is Timestamp) return value.toDate();
     return DateTime.tryParse(value.toString());
   }
 
